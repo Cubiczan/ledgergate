@@ -1,0 +1,29 @@
+stages: [test, secure, gate, deploy]
+include:
+  - template: Jobs/SAST.gitlab-ci.yml
+  - template: Jobs/Secret-Detection.gitlab-ci.yml
+variables: { LEDGERGATE_AUTONOMY: "supervised" }
+unit:
+  stage: test
+  image: python:3.12-slim
+  script: [pip install -q pytest, pytest -q --junitxml=junit.xml]
+  artifacts: { reports: { junit: junit.xml }, when: always }
+ledgergate:
+  stage: gate
+  image: python:3.12-slim
+  rules: [{ if: $CI_MERGE_REQUEST_IID }]
+  script:
+    - git fetch -q origin $CI_MERGE_REQUEST_TARGET_BRANCH_NAME
+    - git diff origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME...HEAD > mr.diff
+    - python -m ledgergate.gate mr.diff --autonomy $LEDGERGATE_AUTONOMY $( [ -f gl-sast-report.json ] && echo --sast gl-sast-report.json )
+  artifacts: { paths: [ledgergate-report.md], when: always }
+deploy_staging:
+  stage: deploy
+  rules: [{ if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH }]
+  environment: staging
+  script: [echo "deploy to Cloud Run staging (gcloud run deploy ...)"]
+deploy_production:
+  stage: deploy
+  rules: [{ if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH, when: manual }]
+  environment: production
+  script: [echo "promote to production after LedgerGate + human approval"]

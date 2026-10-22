@@ -1,0 +1,5 @@
++++ b/ledgergate/forecast.py
++    bal = float(bal) + float(inflows[w])
++    fx_rate = 1.47
++++ b/config.py
++AIRWALLEX_API_KEY = "sk_test_1234567890abcdef"

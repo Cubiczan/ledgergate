@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+junit.xml
+ledgergate-report.md
+mr.diff
+.env

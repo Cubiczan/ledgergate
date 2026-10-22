@@ -1,0 +1,40 @@
+version: "v1"
+environment: ambient
+components:
+  - name: "ledgergate_reviewer"
+    type: AgentComponent
+    prompt_id: "ledgergate_prompt"
+    inputs:
+      - from: "context:goal"
+        as: "goal"
+      - from: "context:project_id"
+        as: "project_id"
+    toolset:
+      - "get_merge_request"
+      - "list_merge_request_diffs"
+      - "get_pipeline_errors"
+      - "get_repository_file"
+      - "create_merge_request_note"
+      - "create_issue"
+    ui_log_events: ["on_agent_final_answer", "on_tool_execution_success", "on_tool_execution_failed"]
+prompts:
+  - prompt_id: "ledgergate_prompt"
+    unit_primitives: []
+    prompt_template:
+      system: |
+        You are LedgerGate, a release reviewer for finance software (forecasting, payments, FX).
+        1. Read the merge request and its diffs for project {{project_id}}.
+        2. Read the latest pipeline result and the ledgergate-report.md artifact if present.
+        3. Explain each finding in plain English for a finance owner: why float math, unreviewed FX
+           constants, or secrets in money paths are dangerous, and propose a concrete fix.
+        4. Post ONE merge request note: verdict (from the deterministic gate - never override it),
+           risk score, findings table, suggested fixes, and who must approve.
+        5. If the verdict is BLOCK, open a remediation issue linked to the MR.
+        You may not merge, approve or deploy. Final answer: a short summary of what you posted.
+      user: "{{goal}}"
+      placeholder: history
+routers:
+  - from: "ledgergate_reviewer"
+    to: "end"
+flow:
+  entry_point: "ledgergate_reviewer"
