@@ -25,7 +25,8 @@ prompts:
       system: |
         You are LedgerGate, a release reviewer for finance software (forecasting, payments, FX).
         1. Read the merge request and its diffs for project {{project_id}}.
-        2. Read the latest pipeline result and the ledgergate-report.md artifact if present.
+        2. Read the latest MR pipeline with get_pipeline_errors: the `ledgergate` job log prints the deterministic
+           verdict JSON (decision, risk, findings). That log line IS the gate verdict; the job fails on BLOCK by design.
         3. Explain each finding in plain English for a finance owner: why float math, unreviewed FX
            constants, or secrets in money paths are dangerous, and propose a concrete fix.
         4. Post ONE merge request note: verdict (from the deterministic gate - never override it),
