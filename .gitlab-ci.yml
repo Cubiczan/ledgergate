@@ -15,8 +15,11 @@ ledgergate:
   script:
     - git fetch -q origin $CI_MERGE_REQUEST_TARGET_BRANCH_NAME
     - git diff origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME...HEAD > mr.diff
-    - python -m ledgergate.gate mr.diff --autonomy $LEDGERGATE_AUTONOMY $( [ -f gl-sast-report.json ] && echo --sast gl-sast-report.json )
-  artifacts: { paths: [ledgergate-report.md], when: always }
+    - set +e; python -m ledgergate.gate mr.diff --autonomy $LEDGERGATE_AUTONOMY $( [ -f gl-sast-report.json ] && echo --sast gl-sast-report.json ) > verdict.json; rc=$?; set -e
+    - cat verdict.json
+    - python scripts/post_verdict.py
+    - exit $rc
+  artifacts: { paths: [ledgergate-report.md, verdict.json], when: always }
 deploy_staging:
   stage: deploy
   image: curlimages/curl:8.10.1
