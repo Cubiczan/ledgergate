@@ -22,15 +22,12 @@ deploy_staging:
   image: curlimages/curl:8.10.1
   rules: [{ if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH }]
   environment: { name: staging, url: $LEDGERGATE_URL }
-  script:
-    - 'curl -fsS -X POST "$LEDGERGATE_URL/api/verdict" -H "Content-Type: application/json" -d "{\"diff\":\"+++ b/README.md\\n+docs\\n\"}" | tee smoke.json'
-    - grep -q PROMOTE_STAGING smoke.json
+  script: [sh scripts/smoke.sh]
 deploy_production:
   stage: deploy
   image: curlimages/curl:8.10.1
   rules: [{ if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH, when: manual }]
   environment: { name: production, url: $LEDGERGATE_URL }
   script:
-    - echo "Production is the Vercel deployment at $LEDGERGATE_URL (promoted after LedgerGate + human approval)"
-    - curl -fsS "$LEDGERGATE_URL/api/verdict" | grep -q '"status": "ok"'
-    - curl -fsS -o /dev/null "$LEDGERGATE_URL/"
+    - echo "Production = Vercel deployment at $LEDGERGATE_URL, promoted after LedgerGate verdict + human approval"
+    - sh scripts/smoke.sh
