@@ -2,7 +2,7 @@
 import json, os, sys, urllib.request
 v = json.load(open("verdict.json"))
 rows = "\n".join(f"| {f['rule']} | {f['severity']} | {f['detail']} |" for f in v["findings"]) or "| - | - | no findings |"
-body = f"""<!-- ledgergate-verdict -->
+body = f"""`[ledgergate-verdict]`
 ## LedgerGate gate verdict (deterministic, from CI)
 
 **Decision: {v['decision']}** | **Risk: {v['risk']}/100** | Pipeline: {os.environ.get('CI_PIPELINE_URL','')} | Job: {os.environ.get('CI_JOB_URL','')} | Commit: `{os.environ.get('CI_COMMIT_SHORT_SHA','')}`
