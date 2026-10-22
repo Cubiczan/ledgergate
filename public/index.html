@@ -1,0 +1,21 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LedgerGate - release gate for finance software</title>
+<style>body{font-family:system-ui,sans-serif;max-width:900px;margin:30px auto;padding:0 16px;background:#0f1115;color:#e8e8e8}
+h1{color:#fc6d26}textarea{width:100%;height:220px;font-family:monospace;background:#1a1d24;color:#e8e8e8;border:1px solid #333;padding:8px}
+button,select{padding:8px 14px;margin:8px 6px 8px 0;background:#fc6d26;color:#fff;border:0;border-radius:4px;cursor:pointer}select{background:#2a2d34}
+.v{font-size:26px;font-weight:700;margin:12px 0}.BLOCK{color:#ff5c5c}.NEEDS_APPROVAL{color:#ffc24d}.PROMOTE_STAGING,.AUTO_PROMOTE{color:#4dd88a}
+table{border-collapse:collapse;width:100%}td,th{border:1px solid #333;padding:6px;text-align:left}a{color:#fc6d26}</style></head><body>
+<h1>LedgerGate</h1><p>A GitLab Duo release gate for finance software. Paste a unified diff, get the same deterministic verdict the <code>ledgergate</code> CI job gives on every merge request. Duo agents explain it; this engine decides.</p>
+<p><a href="https://gitlab.com/gitlab-ai-hackathon/transcend-october-2026/34995099/showcase">GitLab project</a> &middot; <a href="https://github.com/icohangar-ops/ledgergate">GitHub</a></p>
+<textarea id="d">+++ b/ledgergate/forecast.py
++    bal = float(bal) + float(inflows[w])
++    fx_rate = 1.47
++++ b/config.py
++AIRWALLEX_API_KEY = "not-a-real-key-1234567890"</textarea>
+<div><button onclick="d.value=risky">Risky sample</button><button onclick="d.value=clean">Clean sample</button>
+Autonomy <select id="a"><option>supervised</option><option>assisted</option><option>hands-off</option></select><button id="go">Run gate</button></div>
+<div id="out"></div>
+<script>const risky=d.value, clean="+++ b/README.md\n+Docs: describe the weekly runway forecast.\n";
+go.onclick=async()=>{out.textContent="Running...";const r=await fetch("/api/verdict",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({diff:d.value,autonomy:a.value})});const v=await r.json();
+out.innerHTML=`<div class="v ${v.decision}">${v.decision}</div><div>Risk ${v.risk}/100</div><table><tr><th>Rule</th><th>Severity</th><th>Detail</th></tr>${v.findings.map(f=>`<tr><td>${f.rule}</td><td>${f.severity}</td><td>${f.detail.replace(/</g,"&lt;")}</td></tr>`).join("")}</table>`};</script>
+</body></html>

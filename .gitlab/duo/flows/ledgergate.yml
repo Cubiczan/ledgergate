@@ -19,6 +19,7 @@ components:
     ui_log_events: ["on_agent_final_answer", "on_tool_execution_success", "on_tool_execution_failed"]
 prompts:
   - prompt_id: "ledgergate_prompt"
+    name: "LedgerGate reviewer prompt"
     unit_primitives: []
     prompt_template:
       system: |

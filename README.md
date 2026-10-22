@@ -1,5 +1,7 @@
 # LedgerGate — a Supervised post-code release gate for finance software (GitLab Duo Agent Platform)
 
+**Live demo:** https://ledgergate-nu.vercel.app (paste a diff, get the gate verdict; API: `POST /api/verdict`)
+
 > Transcend Hackathon Showcase workspace for @sam1054 (DevPost: sam439). See the [onboarding issue](https://gitlab.com/gitlab-ai-hackathon/transcend-october-2026/34995099/showcase/-/work_items/1).
 
 

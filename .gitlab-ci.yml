@@ -2,7 +2,7 @@ stages: [test, secure, gate, deploy]
 include:
   - template: Jobs/SAST.gitlab-ci.yml
   - template: Jobs/Secret-Detection.gitlab-ci.yml
-variables: { LEDGERGATE_AUTONOMY: "supervised" }
+variables: { LEDGERGATE_AUTONOMY: "supervised", LEDGERGATE_URL: "https://ledgergate-nu.vercel.app" }
 unit:
   stage: test
   image: python:3.12-slim
@@ -19,11 +19,18 @@ ledgergate:
   artifacts: { paths: [ledgergate-report.md], when: always }
 deploy_staging:
   stage: deploy
+  image: curlimages/curl:8.10.1
   rules: [{ if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH }]
-  environment: staging
-  script: [echo "deploy to Cloud Run staging (gcloud run deploy ...)"]
+  environment: { name: staging, url: $LEDGERGATE_URL }
+  script:
+    - 'curl -fsS -X POST "$LEDGERGATE_URL/api/verdict" -H "Content-Type: application/json" -d "{\"diff\":\"+++ b/README.md\\n+docs\\n\"}" | tee smoke.json'
+    - grep -q PROMOTE_STAGING smoke.json
 deploy_production:
   stage: deploy
+  image: curlimages/curl:8.10.1
   rules: [{ if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH, when: manual }]
-  environment: production
-  script: [echo "promote to production after LedgerGate + human approval"]
+  environment: { name: production, url: $LEDGERGATE_URL }
+  script:
+    - echo "Production is the Vercel deployment at $LEDGERGATE_URL (promoted after LedgerGate + human approval)"
+    - curl -fsS "$LEDGERGATE_URL/api/verdict" | grep -q '"status": "ok"'
+    - curl -fsS -o /dev/null "$LEDGERGATE_URL/"
