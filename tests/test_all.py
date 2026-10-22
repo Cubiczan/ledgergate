@@ -16,4 +16,4 @@ def test_float_money_needs_review():
     v = evaluate(d); assert v.decision in ("NEEDS_APPROVAL", "BLOCK") and v.risk >= 40
 
 def test_secret_blocks():
-    assert evaluate("+++ b/app.py\n+API_KEY = 'sk_live_abcdef123456'\n").decision == "BLOCK"
+    assert evaluate("+++ b/app.py\n+API_KEY = 'not-a-real-key-123456'\n").decision == "BLOCK"
