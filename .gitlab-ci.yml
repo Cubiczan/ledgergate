@@ -10,7 +10,7 @@ unit:
   artifacts: { reports: { junit: junit.xml }, when: always }
 ledgergate:
   stage: gate
-  image: python:3.12-slim
+  image: python:3.12
   rules: [{ if: $CI_MERGE_REQUEST_IID }]
   script:
     - git fetch -q origin $CI_MERGE_REQUEST_TARGET_BRANCH_NAME
