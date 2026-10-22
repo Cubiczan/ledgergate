@@ -1,5 +1,8 @@
 # LedgerGate — a Supervised post-code release gate for finance software (GitLab Duo Agent Platform)
 
+> Transcend Hackathon Showcase workspace for @sam1054 (DevPost: sam439). See the [onboarding issue](https://gitlab.com/gitlab-ai-hackathon/transcend-october-2026/34995099/showcase/-/work_items/1).
+
+
 Finance code (cash forecasts, payments, FX) fails in quiet ways: a `float` in a money path, a hard-coded FX rate, a leaked API key. LedgerGate puts a GitLab Duo agent flow plus a deterministic gate between "code merged" and "money moves".
 
 **Autonomy level: Supervised.** Agents run tests, SAST, secret detection, the LedgerGate gate, explain findings on the MR and deploy to staging on their own; a human approves production for anything touching money logic.
